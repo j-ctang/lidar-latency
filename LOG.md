@@ -38,7 +38,7 @@ Dated record of steps, measurements, and issues. Raw benchmark output lives in `
 
 ### 2026-11-16 — Tests and CI
 
-- 14 tests: loader (valid, truncated, missing file), voxel (centroid, negative coords, empty), ground (plane removal, tiny input, vertical wall), clustering (two blobs, transitive chain, size limits), synthetic determinism, end-to-end small scene.
+- Tests: loader (valid, truncated, missing file), voxel (centroid, negative coords, empty), ground (plane removal, tiny input, vertical wall), clustering (two blobs, transitive chain, size limits), synthetic determinism, end-to-end small scene.
 - GitHub Actions on ubuntu-latest: configure, build, ctest, 5-frame replay smoke test. First run green.
 
 ### 2026-11-16 — Baseline measurement
