@@ -6,7 +6,11 @@ Pipeline: voxel downsample, ground removal, Euclidean clustering.
 
 Goal: cut p99 frame latency at least 2x and count frames over a 50 ms budget, before and after optimization.
 
-Status: clustering optimized (grid hash): nuScenes p99 71.1 -> 6.8 ms (10.4x), 0 of 400 frames over 50 ms (was 93). See [LOG.md](LOG.md) for each step, measurements, and issues.
+## Benchmark results
+
+![p99 frame latency in milliseconds, naive vs. grid hash. nuScenes: 71.08 vs. 6.82. Synthetic: 46.53 vs. 8.32. Frame budget: 50 ms.](results/frame-latency.svg)
+
+Grid hashing cut nuScenes p99 latency by **10.4×**. Frames over the 50 ms budget went from **93 of 400 to 0 of 400**. See [LOG.md](LOG.md) for the full benchmark and optimization history.
 
 ## Build and run
 
