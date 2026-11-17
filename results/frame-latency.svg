@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 292" role="img" aria-labelledby="title desc">
+  <title id="title">99th-percentile frame latency</title>
+  <desc id="desc">On nuScenes, naive clustering took 71.08 ms and grid hash took 6.82 ms. On synthetic data, naive took 46.53 ms and grid hash took 8.32 ms. The frame budget was 50 ms.</desc>
+  <rect width="560" height="292" rx="12" fill="#f6f8fa"/>
+  <g font-family="system-ui, sans-serif" fill="#172338">
+    <text x="24" y="32" font-size="20" font-weight="700">99th-percentile frame latency</text>
+    <g font-size="14" font-weight="650">
+      <text x="24" y="67">nuScenes · 400 frames</text>
+      <text x="24" y="164">Synthetic · 200 frames</text>
+    </g>
+    <g font-size="13">
+      <text x="24" y="97">Naive</text>
+      <text x="24" y="126">Grid hash</text>
+      <text x="24" y="194">Naive</text>
+      <text x="24" y="223">Grid hash</text>
+    </g>
+    <path d="M116 76V135 M116 173V244H516" fill="none" stroke="#abb6c4"/>
+    <g fill="#60738b">
+      <rect x="116" y="81" width="355.4" height="20" rx="3"/>
+      <rect x="116" y="178" width="232.65" height="20" rx="3"/>
+    </g>
+    <g fill="#067766">
+      <rect x="116" y="110" width="34.1" height="20" rx="3"/>
+      <rect x="116" y="207" width="41.6" height="20" rx="3"/>
+    </g>
+    <path d="M366 71V244" stroke="#9a461f" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <g font-size="13" font-weight="650">
+      <text x="479" y="96">71.08</text>
+      <text x="158" y="125">6.82</text>
+      <text x="341" y="193" fill="#fff" text-anchor="end">46.53</text>
+      <text x="165" y="222">8.32</text>
+    </g>
+    <g font-size="12" text-anchor="middle">
+      <text x="116" y="263">0</text>
+      <text x="216" y="263">20</text>
+      <text x="316" y="263">40</text>
+      <text x="416" y="263">60</text>
+      <text x="516" y="263">80 ms</text>
+      <text x="366" y="281" fill="#9a461f">50 ms budget</text>
+    </g>
+  </g>
+</svg>
