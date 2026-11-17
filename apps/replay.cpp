@@ -3,6 +3,7 @@
 //
 //   lidar_replay --synthetic N [--out results/x.csv] [--realtime]
 //   lidar_replay --data DIR    [--out results/x.csv] [--realtime] [--frames N]
+//   [--naive-cluster]  use the O(n^2) baseline neighbour search
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
@@ -34,7 +35,7 @@ double percentile(std::vector<double> v, double q) {
 
 int usage() {
   std::cerr << "usage: lidar_replay (--synthetic N | --data DIR) [--frames N]"
-               " [--out FILE] [--realtime]\n";
+               " [--out FILE] [--realtime] [--naive-cluster]\n";
   return 2;
 }
 
@@ -44,6 +45,7 @@ int main(int argc, char** argv) {
   int synthetic = 0, max_frames = -1;
   std::string data_dir, out = "results/replay.csv";
   bool realtime = false;
+  PipelineParams params;
   for (int i = 1; i < argc; ++i) {
     std::string a = argv[i];
     auto next = [&]() -> std::string {
@@ -55,6 +57,7 @@ int main(int argc, char** argv) {
     else if (a == "--frames") max_frames = std::stoi(next());
     else if (a == "--out") out = next();
     else if (a == "--realtime") realtime = true;
+    else if (a == "--naive-cluster") params.cluster.search = NeighborSearch::Naive;
     else return usage();
   }
   if ((synthetic > 0) == !data_dir.empty()) return usage();
@@ -85,7 +88,7 @@ int main(int argc, char** argv) {
                                      : load_nuscenes_bin(files[f].string());
     if (realtime) std::this_thread::sleep_until(next_tick);
     next_tick += period;
-    FrameResult r = run_pipeline(cloud);
+    FrameResult r = run_pipeline(cloud, params);
     totals.push_back(r.t.total_ms);
     char line[256];
     std::snprintf(line, sizeof line, "%d,%zu,%zu,%zu,%zu,%.3f,%.3f,%.3f,%.3f\n", f,
@@ -94,12 +97,17 @@ int main(int argc, char** argv) {
     csv << line;
   }
 
-  const auto over = std::count_if(totals.begin(), totals.end(),
-                                  [](double t) { return t > 50.0; });
-  std::printf("frames=%d p50=%.2f ms p99=%.2f ms max=%.2f ms frames>50ms=%ld\n",
-              frames, percentile(totals, 50), percentile(totals, 99),
-              totals.empty() ? 0.0 : *std::max_element(totals.begin(), totals.end()),
-              static_cast<long>(over));
+  // Frame 0 is cold (first-touch page faults, cold caches). Report both.
+  auto report = [](const char* label, const std::vector<double>& t) {
+    const auto over = std::count_if(t.begin(), t.end(), [](double x) { return x > 50.0; });
+    std::printf("%s frames=%zu p50=%.2f ms p99=%.2f ms max=%.2f ms frames>50ms=%ld\n",
+                label, t.size(), percentile(t, 50), percentile(t, 99),
+                t.empty() ? 0.0 : *std::max_element(t.begin(), t.end()),
+                static_cast<long>(over));
+  };
+  report("all     ", totals);
+  if (totals.size() > 1)
+    report("no-frame0", std::vector<double>(totals.begin() + 1, totals.end()));
   std::printf("wrote %s\n", out.c_str());
   return 0;
 }
