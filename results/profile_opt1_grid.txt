@@ -1,0 +1,22 @@
+# Time Profiler, grid clustering, nuScenes mini first 400 sweeps (low power mode on)
+# same commands as profile_baseline.txt
+samples=2866 (1 ms each)
+## inclusive (lidar::)
+ 100.0%    2865  main
+  94.7%    2715  lidar::run_pipeline(std::__1::vector<lidar::Point, std::__1::allocator<lidar::Point>> const&, lidar::PipelineP
+  60.0%    1721  lidar::euclidean_cluster(std::__1::vector<lidar::Point, std::__1::allocator<lidar::Point>> const&, lidar::Clus
+  28.5%     817  lidar::voxel_downsample(std::__1::vector<lidar::Point, std::__1::allocator<lidar::Point>> const&, float)
+   6.0%     173  lidar::remove_ground(std::__1::vector<lidar::Point, std::__1::allocator<lidar::Point>> const&, lidar::GroundPa
+   5.0%     142  lidar::load_nuscenes_bin(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> 
+   2.9%      82  std::__1::__tree<std::__1::__value_type<std::__1::tuple<int, int, int>, lidar::voxel_downsample(std::__1::vect
+## self top 10
+  52.6%    1508  lidar::euclidean_cluster(std::__1::vector<lidar::Point, std::__1::allocator<lidar::Point>> const&, lidar::Clus
+  20.7%     594  lidar::voxel_downsample(std::__1::vector<lidar::Point, std::__1::allocator<lidar::Point>> const&, float)
+   6.0%     173  lidar::remove_ground(std::__1::vector<lidar::Point, std::__1::allocator<lidar::Point>> const&, lidar::GroundPa
+   3.1%      90  __read_nocancel
+   2.8%      79  void std::__1::__tree_balance_after_insert[abi:nqe220106]<std::__1::__tree_node_base<void*>*>(std::__1::__tree
+   2.1%      59  _xzm_free
+   1.7%      50  void std::__1::__introsort<std::__1::_ClassicAlgPolicy, std::__1::__less<void, void>&, std::__1::pair<unsigned
+   1.6%      46  _xzm_xzone_malloc_tiny
+   1.3%      36  std::__1::__tree<std::__1::__value_type<std::__1::tuple<int, int, int>, lidar::voxel_downsample(std::__1::vect
+   1.1%      31  mach_absolute_time
