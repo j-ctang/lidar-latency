@@ -6,7 +6,7 @@ Pipeline: voxel downsample, ground removal, Euclidean clustering.
 
 Goal: cut p99 frame latency at least 2x and count frames over a 50 ms budget, before and after optimization.
 
-Status: in progress. See [LOG.md](LOG.md) for each step, measurements, and issues.
+Status: clustering optimized (grid hash): nuScenes p99 81.5 -> 8.3 ms, 0 frames over 50 ms. See [LOG.md](LOG.md) for each step, measurements, and issues.
 
 ## Build and run
 
@@ -17,5 +17,7 @@ ctest --test-dir build
 ./build/lidar_replay --synthetic 200 --out results/baseline_synthetic.csv
 ./build/lidar_bench
 ```
+
+Add `--naive-cluster` to replay with the O(n²) baseline search.
 
 Real data: see [scripts/get_data.md](scripts/get_data.md), then `./build/lidar_replay --data data/sweeps/LIDAR_TOP`.
