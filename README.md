@@ -2,9 +2,13 @@
 
 A C++17 lidar perception pipeline that replays nuScenes lidar sweeps at 20 Hz, measures the latency of each stage, and then optimizes the slowest stage.
 
-Pipeline: voxel downsample, ground removal, Euclidean clustering.
-
 Goal: cut p99 frame latency at least 2x and count frames over a 50 ms budget, before and after optimization.
+
+## Pipeline
+
+![A LiDAR sweep goes from replay through voxel downsampling, ground removal, and Euclidean clustering. Each stage is timed. Grid hashing looks up the current cell and its neighbors before testing point distances.](docs/lidar-pipeline.png)
+
+[Editable Excalidraw diagram](docs/lidar-pipeline.excalidraw)
 
 ## Benchmark results
 
