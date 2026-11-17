@@ -16,13 +16,18 @@ struct GroundParams {
 // RANSAC plane fit; returns the points that are NOT on the plane.
 PointCloud remove_ground(const PointCloud& in, const GroundParams& p = {});
 
+enum class NeighborSearch { Naive, Grid };
+
 struct ClusterParams {
   float tolerance = 0.5f;
   int min_size = 10;
   int max_size = 100000;
+  // Naive: O(n) brute-force scan per point, O(n^2) per frame (baseline).
+  // Grid: uniform hash grid, cell = tolerance, scan 27 neighbour cells.
+  NeighborSearch search = NeighborSearch::Grid;
 };
-// Naive Euclidean clustering: BFS with O(n) brute-force neighbour scan, so
-// O(n^2) per frame. Clusters outside [min_size, max_size] are dropped.
+// Euclidean clustering by BFS. Both searches return identical output (same
+// clusters, same point order). Clusters outside [min_size, max_size] are dropped.
 std::vector<Cluster> euclidean_cluster(const PointCloud& in,
                                        const ClusterParams& p = {});
 
