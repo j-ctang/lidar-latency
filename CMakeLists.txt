@@ -38,6 +38,7 @@ if(LIDAR_BUILD_TESTS)
     tests/test_io.cpp tests/test_voxel.cpp tests/test_ground.cpp
     tests/test_cluster.cpp tests/test_pipeline.cpp)
   target_link_libraries(lidar_tests PRIVATE lidar GTest::gtest_main)
+  target_compile_definitions(lidar_tests PRIVATE LIDAR_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
   include(GoogleTest)
   gtest_discover_tests(lidar_tests)
 endif()
