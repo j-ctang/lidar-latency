@@ -19,6 +19,10 @@ Dated record of steps, measurements, and issues. Raw benchmark output lives in `
 | 2026-11-17 | Grid hash clustering, nuScenes mini | 6.94 | 8.34 | 0 / 400 | excl. frame 0: 6.94 / 8.40, 0 / 399; mean voxel 2.05, ground 0.42, cluster 4.32 ms; 7.9x p50, 9.8x p99, 11.8x cluster vs same-session naive; `results/opt1_grid_nuscenes.csv` |
 | 2026-11-17 | Naive rerun, synthetic (same session) | 48.08 | 65.82 | 76 / 200 | low power mode on, see Issues; `results/opt1_naive_rerun_synthetic.csv` |
 | 2026-11-17 | Grid hash clustering, synthetic | 10.07 | 11.33 | 0 / 200 | excl. frame 0: 10.07 / 11.35; mean cluster 4.33 ms; 4.8x p50, 5.8x p99 vs same-session naive; `results/opt1_grid_synthetic.csv` |
+| 2026-11-17 | FINAL naive, nuScenes mini, Low Power Mode off | 39.79 | 71.08 | 93 / 400 | excl. frame 0: 39.96 / 71.40; `results/final_naive_nuscenes.csv` |
+| 2026-11-17 | FINAL grid, nuScenes mini, Low Power Mode off | 5.03 | 6.82 | 0 / 400 | excl. frame 0: 5.03 / 6.90; 7.9x p50, 10.4x p99 vs same-session naive; `results/final_grid_nuscenes.csv` |
+| 2026-11-17 | FINAL naive, synthetic, Low Power Mode off | 32.46 | 46.53 | 0 / 200 | `results/final_naive_synthetic.csv` |
+| 2026-11-17 | FINAL grid, synthetic, Low Power Mode off | 6.84 | 8.32 | 0 / 200 | 4.7x p50, 5.6x p99; `results/final_grid_synthetic.csv` |
 
 ## Steps
 
@@ -75,6 +79,12 @@ Dated record of steps, measurements, and issues. Raw benchmark output lives in `
 - Same 400 sweeps, same `-O2` build: p50 54.66 -> 6.94 ms (7.9x), p99 81.49 -> 8.34 ms (9.8x), frames > 50 ms 260 -> 0. Mean clustering 50.84 -> 4.32 ms (11.8x). Per-frame cluster and point counts equal the committed baseline CSV on all 400 frames.
 - Replay now prints stats for all frames and excluding frame 0. With the grid, frame 0 is not an outlier (8.40 vs 8.34 ms p99), so both are within 0.1 ms.
 - Re-profiled: clustering 60% inclusive, voxel 28.5%, ground 6%. `results/profile_opt1_grid.txt`. Clustering is still the largest stage, so I did not start the voxel change (it was conditional on clustering no longer dominating). Next candidates: voxel `std::map` (sort-based keeps the current output order, which RANSAC depends on) and the per-pop `unordered_map` lookups in clustering.
+
+### 2026-11-17: Final numbers with Low Power Mode off
+
+- `pmset -g` shows `powermode 0`. Same build, same 400 sweeps, naive and grid run back to back.
+- nuScenes: p50 39.79 -> 5.03 ms (7.9x), p99 71.08 -> 6.82 ms (10.4x), frames > 50 ms 93 -> 0.
+- These are the headline numbers. Earlier rows were measured in Low Power Mode.
 
 ## Issues
 

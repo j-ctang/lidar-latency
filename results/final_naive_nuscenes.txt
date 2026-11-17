@@ -1,0 +1,3 @@
+all      frames=400 p50=39.79 ms p99=71.08 ms max=80.73 ms frames>50ms=93
+no-frame0 frames=399 p50=39.96 ms p99=71.40 ms max=80.73 ms frames>50ms=93
+wrote results/final_naive_nuscenes.csv

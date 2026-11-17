@@ -1,0 +1,3 @@
+all      frames=200 p50=32.46 ms p99=46.53 ms max=48.33 ms frames>50ms=0
+no-frame0 frames=199 p50=32.46 ms p99=46.80 ms max=48.33 ms frames>50ms=0
+wrote results/final_naive_synthetic.csv

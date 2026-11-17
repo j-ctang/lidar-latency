@@ -6,7 +6,7 @@ Pipeline: voxel downsample, ground removal, Euclidean clustering.
 
 Goal: cut p99 frame latency at least 2x and count frames over a 50 ms budget, before and after optimization.
 
-Status: clustering optimized (grid hash): nuScenes p99 81.5 -> 8.3 ms, 0 frames over 50 ms. See [LOG.md](LOG.md) for each step, measurements, and issues.
+Status: clustering optimized (grid hash): nuScenes p99 71.1 -> 6.8 ms (10.4x), 0 of 400 frames over 50 ms (was 93). See [LOG.md](LOG.md) for each step, measurements, and issues.
 
 ## Build and run
 
