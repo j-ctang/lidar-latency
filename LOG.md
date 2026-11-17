@@ -14,6 +14,7 @@ Dated record of steps, measurements, and issues. Raw benchmark output lives in `
 | Date | Change | p50 ms | p99 ms | Frames > 50 ms | Notes |
 |---|---|---|---|---|---|
 | 2026-11-16 | Naive baseline, synthetic | 29.52 | 41.90 | 1 / 200 | 30k pts/frame; mean voxel 2.75, ground 0.65, cluster 26.28 ms; `results/baseline_synthetic.csv` |
+| 2026-11-16 | Naive baseline, nuScenes mini | 53.25 | 79.41 | 240 / 400 | 34.7k pts/frame, 11.7k after voxel, 8.2k non-ground, 109 clusters; mean voxel 1.94, ground 0.40, cluster 49.62 ms; `results/baseline_nuscenes.csv` |
 
 ## Steps
 
@@ -49,8 +50,15 @@ Dated record of steps, measurements, and issues. Raw benchmark output lives in `
 - Clustering is ~89% of frame time. It is the stage to optimize next.
 - Point loading and scene generation are outside the timed region. Frames run back-to-back (no `--realtime` pacing) for the baseline.
 
+### 2026-11-16: Baseline on real nuScenes sweeps
+
+- Downloaded `v1.0-mini.tgz` (4.17 GB) from the official nuScenes link used by the devkit tutorial (`https://www.nuscenes.org/data/v1.0-mini.tgz`), after accepting the nuScenes terms of use. Extracted into `data/` (gitignored). 3,531 LIDAR_TOP sweeps.
+- Replayed the first 400 sweeps back to back: p50 53.25 ms, p99 79.41 ms, max 98.46 ms, 240 of 400 frames over the 50 ms budget.
+- Clustering is 95% of mean frame time (49.62 of 51.97 ms). Real sweeps keep more non-ground points and produce about 9x more clusters than the synthetic scene.
+
 ## Issues
 
 - **The only frame over 50 ms is frame 0 (51.20 ms: voxel 6.97, cluster 42.77).** Cause: cold start; first-touch page faults and cold caches on the first frame. Not fixed: it is real first-frame latency, so it stays in the numbers. Later runs should report it separately or add warm-up frames, and say which.
 - **`timeout` not found on macOS when wrapping `gh run watch`.** Cause: `timeout` is GNU coreutils and not in base macOS. Fix: ran `gh run watch` without the wrapper.
 - **Synthetic numbers are not nuScenes numbers.** The synthetic scene keeps ~85% of points after a 0.2 m voxel, while real sweeps are sparser far out and denser near the car. Baseline on real sweeps still to be measured once v1.0-mini is downloaded by hand.
+- Synthetic scene underestimated cost: real sweeps run 1.8x slower at p50 (53.25 vs 29.52 ms) and miss the 50 ms budget on 60% of frames. Real data is now the reference for all later comparisons.
