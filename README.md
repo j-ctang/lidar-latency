@@ -1,20 +1,23 @@
 # lidar-latency
 
-A C++17 lidar perception pipeline that replays nuScenes lidar sweeps at 20 Hz, measures the latency of each stage, and then optimizes the slowest stage.
-
-Goal: cut p99 frame latency at least 2x and count frames over a 50 ms budget, before and after optimization.
+A C++17 LiDAR pipeline for measuring and reducing point-cloud processing latency. It replays nuScenes sweeps at 20 Hz, times each stage, and compares a naive clustering search with a grid-hash search.
 
 ## Pipeline
 
-![A LiDAR sweep goes from replay through voxel downsampling, ground removal, and Euclidean clustering. Each stage is timed. Grid hashing looks up the current cell and its neighbors before testing point distances.](docs/lidar-pipeline.png)
+Each sweep passes through voxel downsampling, ground removal, and Euclidean clustering. The benchmark times the stages to show where processing time goes and how the clustering search changes end-to-end latency.
 
-[Editable Excalidraw diagram](docs/lidar-pipeline.excalidraw)
+![LiDAR sweep replay, voxel downsampling, ground removal, and Euclidean clustering, with per-stage timing and grid-hash neighbor lookup.](docs/lidar-pipeline.png)
 
-## Benchmark results
+## Results
 
-![p99 frame latency in milliseconds, naive vs. grid hash. nuScenes: 71.08 vs. 6.82. Synthetic: 46.53 vs. 8.32. Frame budget: 50 ms.](results/frame-latency.svg)
+Grid hashing reduced nuScenes p99 frame latency from **71.08 ms to 6.82 ms (10.4×)**. Frames above the **50 ms** budget fell from **93 of 400 to 0 of 400**.
 
-Grid hashing cut nuScenes p99 latency by **10.4×**. Frames over the 50 ms budget went from **93 of 400 to 0 of 400**. See [LOG.md](LOG.md) for the full benchmark and optimization history.
+| Dataset | Naive p99 | Grid-hash p99 | Frame budget |
+| --- | ---: | ---: | ---: |
+| nuScenes | 71.08 ms | 6.82 ms | 50 ms |
+| Synthetic | 46.53 ms | 8.32 ms | 50 ms |
+
+See [LOG.md](LOG.md) for the benchmark and optimization history.
 
 ## Build and run
 
@@ -28,4 +31,8 @@ ctest --test-dir build
 
 Add `--naive-cluster` to replay with the O(n²) baseline search.
 
-Real data: see [scripts/get_data.md](scripts/get_data.md), then `./build/lidar_replay --data data/sweeps/LIDAR_TOP`.
+For real data, follow [scripts/get_data.md](scripts/get_data.md), then run:
+
+```sh
+./build/lidar_replay --data data/sweeps/LIDAR_TOP
+```
