@@ -17,4 +17,16 @@ jobs:
       - name: Test
         run: ctest --test-dir build --output-on-failure
       - name: Smoke replay
-        run: ./build/lidar_replay --synthetic 5 --out /tmp/smoke.csv
+        run: |
+          out=$(mktemp)
+          ./build/lidar_replay --synthetic 5 --out "$out"
+          awk -F, '
+            NR == 1 && $0 != "frame,in_points,voxel_points,nonground_points,clusters,voxel_ms,ground_ms,cluster_ms,total_ms" { bad = 1 }
+            NR > 1 && (NF != 9 || $1 !~ /^[0-9]+$/ || $1 != NR - 2) { bad = 1 }
+            END {
+              if (bad || NR != 6) {
+                print "Expected the replay CSV header and frame rows 0 through 4." > "/dev/stderr"
+                exit 1
+              }
+            }
+          ' "$out"

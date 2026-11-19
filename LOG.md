@@ -52,7 +52,7 @@ Dated record of steps, measurements, and issues. Raw benchmark output lives in `
 
 ### 2026-11-16 — Baseline measurement
 
-- `./build/lidar_replay --synthetic 200 --out results/baseline_synthetic.csv`
+- The original replay processed 200 synthetic frames and wrote `results/baseline_synthetic.csv`.
 - Output: `frames=200 p50=29.52 ms p99=41.90 ms max=51.20 ms frames>50ms=1`
 - Google Benchmark (one frame, steady state): voxel 2.47 ms, ground 0.643 ms, cluster 26.0 ms, pipeline 29.3 ms.
 - Clustering is ~89% of frame time. It is the stage to optimize next.
@@ -86,11 +86,25 @@ Dated record of steps, measurements, and issues. Raw benchmark output lives in `
 - nuScenes: p50 39.79 -> 5.03 ms (7.9x), p99 71.08 -> 6.82 ms (10.4x), frames > 50 ms 93 -> 0.
 - These are the headline numbers. Earlier rows were measured in Low Power Mode.
 
+### Reproduce the comparison
+
+Use the [Release build](README.md#build-and-run) and [nuScenes v1.0-mini sweeps](scripts/get_data.md). Run each pair back to back on the same machine. The published comparison used Low Power Mode off (`pmset -g` showed `powermode 0`) and unpaced replay.
+
+```sh
+out=$(mktemp -d)
+./build/lidar_replay --data data/sweeps/LIDAR_TOP --frames 400 --naive-cluster --out "$out/naive_nuscenes.csv"
+./build/lidar_replay --data data/sweeps/LIDAR_TOP --frames 400 --out "$out/grid_nuscenes.csv"
+./build/lidar_replay --synthetic 200 --naive-cluster --out "$out/naive_synthetic.csv"
+./build/lidar_replay --synthetic 200 --out "$out/grid_synthetic.csv"
+```
+
+Compare the `all` summaries for p50, p99, and frames over 50 ms. These summaries include the first frame. For future comparisons, record the commands, machine, build settings, power mode, and frame counts alongside the results.
+
 ## Issues
 
 - **The only frame over 50 ms is frame 0 (51.20 ms: voxel 6.97, cluster 42.77).** Cause: cold start; first-touch page faults and cold caches on the first frame. Not fixed: it is real first-frame latency, so it stays in the numbers. Later runs should report it separately or add warm-up frames, and say which.
 - **`timeout` not found on macOS when wrapping `gh run watch`.** Cause: `timeout` is GNU coreutils and not in base macOS. Fix: ran `gh run watch` without the wrapper.
-- **Synthetic numbers are not nuScenes numbers.** The synthetic scene keeps ~85% of points after a 0.2 m voxel, while real sweeps are sparser far out and denser near the car. Baseline on real sweeps still to be measured once v1.0-mini is downloaded by hand.
+- The synthetic scene keeps ~85% of points after a 0.2 m voxel, while real sweeps are sparser far out and denser near the car.
 - Synthetic scene underestimated cost: real sweeps run 1.8x slower at p50 (53.25 vs 29.52 ms) and miss the 50 ms budget on 60% of frames. Real data is now the reference for all later comparisons.
 - **Synthetic numbers on 2026-11-17 are ~1.6x slower than the 2026-11-16 synthetic baseline with unchanged code.** Cause: macOS Low Power Mode is on (`pmset -g`: `powermode 1`). The baseline commit rebuilt and rerun now gives p50 49.82 ms vs 29.52 ms recorded. Fix: every before/after comparison above uses a naive rerun in the same session, same build flags, not the older rows. The 2026-11-16 nuScenes baseline (53.25 ms) is within 3% of today's naive rerun (54.66 ms), so it was likely also in Low Power Mode. Not fixed: power mode is a machine setting; rerun all rows with it off for absolute numbers.
 - **First xctrace export parse found 0 samples.** Cause: the time-profile table uses `<tagged-backtrace>`, not `<backtrace>`. Fix: parse `tagged-backtrace` in `scripts/xctrace_summary.py`.

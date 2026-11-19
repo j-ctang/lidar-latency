@@ -18,8 +18,9 @@ downloaded by hand and never committed. `data/` is gitignored.
 5. Replay them:
 
    ```sh
+   out=$(mktemp -d)
    ./build/lidar_replay --data data/sweeps/LIDAR_TOP --frames 400 \
-       --out results/baseline_nuscenes.csv
+       --out "$out/nuscenes.csv"
    ```
 
    File names contain the timestamp, so sorting by name gives replay order.

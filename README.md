@@ -1,6 +1,6 @@
 # lidar-latency
 
-A C++17 LiDAR pipeline for measuring and reducing point-cloud processing latency. It replays nuScenes sweeps at 20 Hz, times each stage, and compares a naive clustering search with a grid-hash search.
+A C++17 LiDAR pipeline for measuring and reducing point-cloud processing latency. It times each stage against a 50 ms frame budget and compares a naive clustering search with a grid-hash search.
 
 ## Pipeline
 
@@ -25,14 +25,18 @@ See [LOG.md](LOG.md) for the benchmark and optimization history.
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
 ctest --test-dir build
-./build/lidar_replay --synthetic 200 --out results/baseline_synthetic.csv
+out=$(mktemp -d)
+./build/lidar_replay --synthetic 200 --out "$out/synthetic.csv"
 ./build/lidar_bench
 ```
 
-Add `--naive-cluster` to replay with the O(n²) baseline search.
+Add `--naive-cluster` to replay with the O(n²) baseline search, or `--realtime` to pace replay at 20 Hz. By default, replay runs as fast as possible.
 
 For real data, follow [scripts/get_data.md](scripts/get_data.md), then run:
 
 ```sh
-./build/lidar_replay --data data/sweeps/LIDAR_TOP
+out=$(mktemp -d)
+./build/lidar_replay --data data/sweeps/LIDAR_TOP --out "$out/nuscenes.csv"
 ```
+
+See [Reproduce the comparison](LOG.md#reproduce-the-comparison) for the paired benchmark commands.
