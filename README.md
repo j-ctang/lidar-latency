@@ -4,7 +4,7 @@ A C++17 LiDAR pipeline for measuring and reducing point-cloud processing latency
 
 ## Pipeline
 
-Each sweep passes through voxel downsampling, ground removal, and Euclidean clustering. The benchmark times the stages to show where processing time goes and how the clustering search changes end-to-end latency.
+Each LiDAR sweep moves through five steps: replay, voxel downsampling, ground removal, Euclidean clustering, and timing. The diagram explains what each step does before comparing the clustering searches.
 
 ![LiDAR sweep replay, voxel downsampling, ground removal, and Euclidean clustering, with per-stage timing and grid-hash neighbor lookup.](docs/lidar-pipeline.png)
 
